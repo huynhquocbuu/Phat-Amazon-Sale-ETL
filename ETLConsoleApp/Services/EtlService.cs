@@ -17,7 +17,7 @@ public class EtlService
     //private string? _excelFilePath;
     public EtlService()
     {
-        string connectionString = @"Server=221.133.9.10,1483;Database=AmazonSaleETL;User Id=sa;Password=Khdt@199;Multipleactiveresultsets=true;Encrypt=False";
+        string connectionString = @"Server=221";
         _connection = new SqlConnection(connectionString);
         //_excelFilePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         //_excelFilePath = Path.Combine(_excelFilePath, @"Docs\AmazonSaleData.xlsx");
