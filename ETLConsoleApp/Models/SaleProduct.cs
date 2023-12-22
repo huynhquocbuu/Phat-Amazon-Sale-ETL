@@ -2,7 +2,7 @@
 
 public class SaleProduct
 {
-    public int Id { get; set; }
+    public long Id { get; set; }
     
     public int Year { get; set; }                           //1
     public int Month { get; set; }                          //2

@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.Reflection;
 using Dapper;
+using ETLConsoleApp.Constants;
 using ETLConsoleApp.Models;
 using Microsoft.Data.SqlClient;
 using NPOI.SS.Formula.Functions;
@@ -11,34 +12,14 @@ namespace ETLConsoleApp.Services;
 
 public class EtlService
 {
-    private string _insertProductQuery;
-    private string _insertSaleProductQuery;
     private IDbConnection _connection;
-    //private string? _excelFilePath;
-    public EtlService()
+    private string _fileDirectory;
+    public EtlService(IDbConnection connection, string fileDirectory)
     {
-        string connectionString = @"Server=221";
-        _connection = new SqlConnection(connectionString);
-        //_excelFilePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        //_excelFilePath = Path.Combine(_excelFilePath, @"Docs\AmazonSaleData.xlsx");
-        _insertProductQuery = @"
-            INSERT INTO Products (Sku, FnSku, Asin, ProductName, Country, CurrencyCode, Price) 
-            VALUES (@Sku, @FnSku, @Asin, @ProductName, @Country, @CurrencyCode, @Price)";
-
-        _insertSaleProductQuery = @"
-        INSERT INTO SaleProducts (Sku, Year, Month, Week, FromDate, ToDate, ReportName, ParentAsin, ChildAsin,
-                                  SessionTotal, SessionTotalB2B, SessionPercentageTotal, SessionPercentageTotalB2B,
-                                  PageViewsTotalB2B, PageViewsTotal, PageViewsPercentageTotalB2B, PageViewsPercentageTotal,
-                                  FeaturedOfferPercentage, FeaturedOfferPercentageB2B, UnitsOrdered, UnitsOrderedB2B,
-                                  UnitSessionPercentage, UnitSessionPercentageB2B, OrderedProductSales, OrderedProductSalesB2B,
-                                  TotalOrderItems, TotalOrderItemsB2B) 
-        VALUES (@Sku, @Year, @Month, @Week, @FromDate, @ToDate, @ReportName, @ParentAsin, @ChildAsin,
-                                  @SessionTotal, @SessionTotalB2B, @SessionPercentageTotal, @SessionPercentageTotalB2B,
-                                  @PageViewsTotalB2B, @PageViewsTotal, @PageViewsPercentageTotalB2B, @PageViewsPercentageTotal,
-                                  @FeaturedOfferPercentage, @FeaturedOfferPercentageB2B, @UnitsOrdered, @UnitsOrderedB2B,
-                                  @UnitSessionPercentage, @UnitSessionPercentageB2B, @OrderedProductSales, @OrderedProductSalesB2B,
-                                  @TotalOrderItems, @TotalOrderItemsB2B)
-        ";
+        _connection = connection;
+        _fileDirectory = fileDirectory;
+        
+        
         
         
     }
@@ -47,20 +28,23 @@ public class EtlService
     {
         int eff = 0;
         //eff += EtlProductsFromExcel();
-        eff += EtlSaleProductsFromExcel();
+        //eff += EtlSaleProductsFromExcel();
+        //eff += EtlInventoryFromText();
+        eff += EtlInventoriesFromExcel();
         return eff;
     }
-
+    
     private ISheet ReadExcelFile(string filePath, string sheetName)
     {
         IWorkbook wb = new XSSFWorkbook(filePath);
         return wb.GetSheet(sheetName);
     }
+    #region EtlProductsFromExcel
     private int EtlProductsFromExcel()
     {
         int eff = 0;
         ISheet sheet = ReadExcelFile(
-            filePath: @"E:\PrivatePlace\SoftwareProjects\Phat-Amazon-Sale-ETL\Docs\AmazonSaleData.xlsx",
+            filePath: Path.Combine(_fileDirectory, "AmazonSaleData.xlsx"),
             sheetName: "008_143238019710");
         int firstRow = 2;
         
@@ -83,18 +67,21 @@ public class EtlService
                     CurrencyCode = curRow.GetCell(8).StringCellValue.Trim(),
                     Price = (decimal) curRow.GetCell(9).NumericCellValue/100,
                 };
-                eff += _connection.Execute(sql: _insertProductQuery, param: product);
+                eff += _connection.Execute(sql: SqlStatement.InsertProductSql, param: product);
             }
         }
 
         return eff;
     }
+    #endregion
 
+
+    #region EtlSaleProductsFromExcel
     private int EtlSaleProductsFromExcel()
     {
         int eff = 0;
         ISheet sheet = ReadExcelFile(
-            filePath: @"E:\PrivatePlace\SoftwareProjects\Phat-Amazon-Sale-ETL\Docs\ANALYZE.xlsx",
+            filePath: Path.Combine(_fileDirectory, "ANALYZE.xlsx"),
             sheetName: "003_Sales");
         int firstRow = 2;
         if (sheet != null)
@@ -144,7 +131,79 @@ public class EtlService
                 saleProduct.TotalOrderItems = (int) curRow.GetCell(27).NumericCellValue;
                 saleProduct.TotalOrderItemsB2B = (int) curRow.GetCell(28).NumericCellValue;
                 
-                eff += _connection.Execute(sql: _insertSaleProductQuery, param: saleProduct);
+                eff += _connection.Execute(sql: SqlStatement.InsertSaleProductSql, param: saleProduct);
+            }
+        }
+
+        return eff;
+    }
+    #endregion
+    
+    
+    private int EtlInventoryFromText()
+    {
+        string filePath = Path.Combine(_fileDirectory, "InventoryReport12-19-2023.txt");
+        IEnumerable<string> lines = File.ReadLines(filePath);
+        //Console.WriteLine(String.Join(Environment.NewLine, lines));
+        lines = File.ReadAllLines(filePath);
+        //Console.WriteLine(String.Join(Environment.NewLine, lines));
+        return 0;
+    }
+
+    private int EtlInventoriesFromExcel()
+    {
+        int eff = 0;
+        ISheet sheet = ReadExcelFile(
+            filePath: Path.Combine(_fileDirectory, "AmazonSaleData.xlsx"),
+            sheetName: "010_143307019711");
+        int firstRow = 2;
+        if (sheet != null)
+        {
+            int rowCount = sheet.LastRowNum; // This may not be valid row count.
+            // If first row is table head, i starts from 1
+            for (int i = firstRow; i <= rowCount; i++)
+            {
+                IRow curRow = sheet.GetRow(i);
+
+                var inventory = new Inventory();
+                inventory.SnapshotDate = curRow.GetCell(0).DateCellValue;
+                inventory.Sku = curRow.GetCell(1).StringCellValue.Trim();
+                inventory.Available = (int) curRow.GetCell(6).NumericCellValue;
+                inventory.PendingRemovalQuantity = (int) curRow.GetCell(7).NumericCellValue;
+                inventory.InvAge0To90Days = (int) curRow.GetCell(8).NumericCellValue;
+                inventory.InvAge91To180Days = (int) curRow.GetCell(9).NumericCellValue;
+                inventory.InvAge181To270Days = (int) curRow.GetCell(10).NumericCellValue;
+                inventory.InvAge271To365Days = (int) curRow.GetCell(11).NumericCellValue;
+                inventory.InvAge365PlusDays = (int) curRow.GetCell(12).NumericCellValue;
+                inventory.UnitsShippedT7 = (int) curRow.GetCell(14).NumericCellValue;
+                inventory.UnitsShippedT30 = (int) curRow.GetCell(15).NumericCellValue;
+                inventory.UnitsShippedT60 = (int) curRow.GetCell(16).NumericCellValue;
+                inventory.UnitsShippedT90 = (int) curRow.GetCell(17).NumericCellValue;
+                
+                
+                inventory.Alert = curRow.GetCell(18).StringCellValue;
+                inventory.YourPrice = (decimal) curRow.GetCell(19).NumericCellValue;
+                inventory.SalePrice = (decimal) curRow.GetCell(20).NumericCellValue;
+                inventory.LowestPriceNewPlusShipping = (decimal) curRow.GetCell(21).NumericCellValue;
+                inventory.LowestPriceUsed = (decimal) curRow.GetCell(22).NumericCellValue;
+                inventory.RecommendedAction = curRow.GetCell(23).StringCellValue;
+                inventory.HealthyInventoryLevel = curRow.GetCell(24).StringCellValue;
+                inventory.RecommendedSalesPrice = (decimal) curRow.GetCell(25).NumericCellValue;
+                inventory.RecommendedSalesDurationDays = (int) curRow.GetCell(26).NumericCellValue;
+                inventory.RecommendedRemovalQuantity = (int) curRow.GetCell(27).NumericCellValue;
+                inventory.EstimatedCostSavingsOfRecommendedActions = (decimal) curRow.GetCell(28).NumericCellValue;
+                inventory.SellThrough = (int) curRow.GetCell(29).NumericCellValue;
+                inventory.ItemVolume = (int) curRow.GetCell(30).NumericCellValue;
+                inventory.VolumeUnitMeasurement = curRow.GetCell(31).StringCellValue;
+                inventory.StorageType = curRow.GetCell(32).StringCellValue;
+                inventory.StorageVolume = (int) curRow.GetCell(33).NumericCellValue;
+                inventory.MarketPlace = curRow.GetCell(34).StringCellValue;
+                inventory.ProductGroup = curRow.GetCell(35).StringCellValue;
+                inventory.SaleRank = (int) curRow.GetCell(36).NumericCellValue;
+                inventory.DaysOfSupply = (int) curRow.GetCell(37).NumericCellValue;
+                inventory.FbaInventoryLevelHealthStatus = curRow.GetCell(75).StringCellValue;
+                
+                eff += _connection.Execute(sql: SqlStatement.InsertInventorySql, param: inventory);
             }
         }
 

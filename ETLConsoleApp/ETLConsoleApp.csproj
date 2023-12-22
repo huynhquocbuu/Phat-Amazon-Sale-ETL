@@ -16,6 +16,14 @@
     </ItemGroup>
 
 
+    <ItemGroup>
+        <Content Include="AppData\**">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
+
+
 
 
 

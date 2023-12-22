@@ -1,0 +1,37 @@
+sku	asin	price	quantity	Business Price	Quantity Price Type	Quantity Lower Bound 1	Quantity Price 1	Quantity Lower Bound 2	Quantity Price 2	Quantity Lower Bound 3	Quantity Price 3	Quantity Lower Bound 4	Quantity Price 4	Quantity Lower Bound 5	Quantity Price 5	Progressive Price Type	Progressive Lower Bound 1	Progressive Price 1	Progressive Lower Bound 2	Progressive Price 2	Progressive Lower Bound 3	Progressive Price 3
+SIMFBA10003	B09Q837MF6	22.99		19.99	percent	5	3.00	10	5.00	20	7.00											
+SIMFBA10004	B09Q86K46P	22.99		19.99	percent	5	3.00	10	5.00	20	7.00											
+SIMFBA10005	B09Q82WCBL	21.99		22.99	percent	2	1.00	5	3.00	10	5.00	20	7.00									
+SIMFBA10006	B09Q867JDT	18.99		22.99	percent	5	3.00	10	5.00	20	7.00											
+SIMFBA10007	B09Q7PGRSD	18.99		22.99	percent	5	3.00	10	5.00	20	7.00											
+SIMFBA10008	B09Q839M44	20.99		20.99	percent	3	2.00	6	5.00	20	8.00											
+SIMFBA10010	B09Q8CZZQM	16.99		20.99	percent	5	3.00	10	5.00	20	7.00											
+SIMFBA10012	B09Q7TZ6VW	18.99		22.99	percent	3	2.00	6	5.00	15	8.00											
+SIMFBA10013	B09Q8BDR3J	14.99		22.99																		
+SIMFBA10016	B09Q85ZMX8	13.99		22.99	percent	5	3.00	10	5.00	20	7.00											
+SIMFBA10019	B09Q8F788D	19.99		19.99	percent	5	3.00	10	5.00	20	7.00											
+SIMFBA10020	B09Q8BGB69	18.99		22.99																		
+SIMFBA20001	B0B38969VC	24.99		38.99	percent	5	3.00	10	5.00	20	7.00											
+SIMFBA20002	B0B389QV1H	22.99		36.99	percent	5	3.00	10	5.00	20	7.00											
+SIMFBA20003	B0B389ZHPP	20.99		34.99	percent	5	3.00	10	5.00	20	7.00											
+SIMFBA20004	B0B389HDL5	18.99		33.99	percent	5	3.00	10	5.00	20	7.00											
+SIMFBA20005PU	B0B389Y6T6	21.99		34.99	percent	5	3.00	10	5.00	20	7.00											
+SIMFBA20005TE	B0B38B7PN1	20.99		34.99	percent	5	3.00	10	5.00	20	7.00											
+SIMFBA20006PU	B0B389WMMN	30.99		34.99	percent	5	3.00	10	5.00	20	7.00											
+SIMFBA20006TE	B0B38B778J	20.99		34.99	percent	5	3.00	10	5.00	20	7.00											
+SIMFBA20007PU	B0B38B19CF	24.99		34.99	percent	5	3.00	10	5.00	20	7.00											
+SIMFBA20007TE	B0B389Y873	22.99		35.99	percent	5	3.00	10	5.00	20	7.00											
+SIMFBA20008PU	B0B389JBJ2	22.99		35.99																		
+SIMFBA20008TE	B0B38BT6Z6	22.99		37.99	percent	5	3.00	10	5.00	20	7.00											
+HO-G2EK-RJS9	B09V6THLQH	19.99	0																			
+SIMFBA10001	B09Q8922JF	20.99		23.49	percent	5	3.00	10	5.00	20	7.00											
+SIMFBA10002	B09Q7T2W3V	20.99		20.99	percent	5	3.00	10	5.00	20	7.00											
+SIMFBA10009	B09Q7R3JLZ	19.99		19.99	percent	5	3.00	10	5.00	20	7.00											
+SIMFBA10011	B09Q821VMF	20.99		19.99	percent	5	3.00	10	5.00	20	7.00											
+SIMFBA10014	B09Q7VVYTF	19.99		19.99	percent	5	4.00	10	6.00	50	10.00											
+SIMFBA10017	B09Q8H4HKF	19.99		19.99																		
+SIMFBA10018	B09Q8LDCJX	19.99		19.99	percent	3	3.00	5	5.00	10	8.00											
+SIMVAR10001	B0BC7YHGYH	19.99	0	19.99	percent	5	3.00	10	5.00	20	7.00											
+SIMVAR10003	B0BJVNB6CB	19.99	0																			
+SIMVAR20001	B0BQ26FXG2	39.99	0																			
+SIMVAR20005	B0BJVQ5HWZ	30.99	0																			
